@@ -1,0 +1,67 @@
+/* content.css - 内容脚本样式 */
+
+/* 浮动按钮 */
+.mail-assistant-floating-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 10000;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  transition: all 0.3s;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.mail-assistant-floating-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
+}
+
+.mail-assistant-floating-btn:active {
+  transform: translateY(0);
+}
+
+/* 通知样式 */
+.mail-assistant-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10001;
+  padding: 15px 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-size: 14px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  opacity: 0;
+  transform: translateX(400px);
+  transition: all 0.3s ease-in-out;
+  max-width: 300px;
+}
+
+.mail-assistant-notification.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.mail-assistant-notification.success {
+  border-left: 4px solid #28a745;
+  color: #155724;
+}
+
+.mail-assistant-notification.error {
+  border-left: 4px solid #dc3545;
+  color: #721c24;
+}
+
+.mail-assistant-notification.info {
+  border-left: 4px solid #17a2b8;
+  color: #0c5460;
+}

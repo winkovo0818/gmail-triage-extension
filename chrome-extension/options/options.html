@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>邮件智能助手 - 设置</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1>邮件智能助手 - 设置</h1>
+      <p>配置API服务器和认证信息</p>
+    </header>
+
+    <main class="main-content">
+      <form id="settingsForm">
+        <!-- API配置 -->
+        <section class="section">
+          <h2>API服务器配置</h2>
+          
+          <div class="form-group">
+            <label for="apiBaseUrl">
+              API服务器地址
+              <span class="hint">后端服务的完整URL地址</span>
+            </label>
+            <input 
+              type="url" 
+              id="apiBaseUrl" 
+              placeholder="http://localhost:3000"
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="apiKey">
+              API密钥（可选）
+              <span class="hint">如果后端配置了BACKEND_API_KEY，请在此填写</span>
+            </label>
+            <input 
+              type="password" 
+              id="apiKey" 
+              placeholder="留空表示无需认证"
+            >
+            <button type="button" id="toggleApiKey" class="btn-toggle">显示</button>
+          </div>
+
+          <div class="form-group">
+            <button type="button" id="testConnection" class="btn btn-secondary">
+              测试连接
+            </button>
+            <span id="connectionStatus" class="status-badge"></span>
+          </div>
+        </section>
+
+        <!-- 功能配置 -->
+        <section class="section">
+          <h2>功能设置</h2>
+          
+          <div class="form-group checkbox-group">
+            <label>
+              <input type="checkbox" id="autoExtract" checked>
+              <span>自动提取邮件内容</span>
+              <span class="hint">打开扩展时自动从邮件页面提取内容</span>
+            </label>
+          </div>
+
+          <div class="form-group checkbox-group">
+            <label>
+              <input type="checkbox" id="showFloatingButton" checked>
+              <span>显示浮动按钮</span>
+              <span class="hint">在邮件页面显示快捷分析按钮</span>
+            </label>
+          </div>
+
+          <div class="form-group">
+            <label for="defaultTone">
+              默认回复语气
+              <span class="hint">生成回复草稿时的默认语气</span>
+            </label>
+            <select id="defaultTone">
+              <option value="concise">简洁</option>
+              <option value="formal">正式</option>
+              <option value="friendly">友好</option>
+              <option value="professional">专业</option>
+              <option value="casual">随意</option>
+            </select>
+          </div>
+        </section>
+
+        <!-- 保存按钮 -->
+        <div class="actions">
+          <button type="submit" class="btn btn-primary">保存设置</button>
+          <button type="button" id="resetBtn" class="btn btn-secondary">恢复默认</button>
+        </div>
+
+        <div id="saveStatus" class="save-status"></div>
+      </form>
+
+      <!-- 帮助信息 -->
+      <section class="section help-section">
+        <h2>使用帮助</h2>
+        
+        <div class="help-item">
+          <h3>如何启动后端服务？</h3>
+          <ol>
+            <li>打开命令行，进入项目目录</li>
+            <li>运行 <code>npm install</code> 安装依赖</li>
+            <li>配置 <code>.env</code> 文件，填写LLM_API_KEY</li>
+            <li>运行 <code>npm start</code> 启动服务</li>
+            <li>服务默认运行在 http://localhost:3000</li>
+          </ol>
+        </div>
+
+        <div class="help-item">
+          <h3>支持的邮件服务</h3>
+          <ul>
+            <li>Gmail (mail.google.com)</li>
+            <li>Outlook Web (outlook.live.com, outlook.office.com)</li>
+          </ul>
+        </div>
+
+        <div class="help-item">
+          <h3>常见问题</h3>
+          <p><strong>Q: 为什么无法连接到API？</strong></p>
+          <p>A: 请确保后端服务已启动，并且URL地址正确。如果使用了CORS，请检查CORS配置。</p>
+          
+          <p><strong>Q: 如何获取API密钥？</strong></p>
+          <p>A: API密钥在后端的.env文件中配置（BACKEND_API_KEY），如果未配置则无需填写。</p>
+        </div>
+
+        <div class="help-item">
+          <h3>关于</h3>
+          <p>版本: 1.0.0</p>
+          <p>后端版本: 0.2.0</p>
+          <p>开发者: Mail Assistant Team</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>

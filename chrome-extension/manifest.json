@@ -1,0 +1,48 @@
+{
+  "manifest_version": 3,
+  "name": "邮件智能助手",
+  "version": "1.0.0",
+  "description": "智能分析邮件内容，生成摘要、待办事项和回复建议",
+  "author": "云淡风轻",
+  "homepage_url": "https://github.com/winkovo0818/gmail-triage-extension",
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "邮件智能助手"
+  },
+  "background": {
+    "service_worker": "background/background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://mail.google.com/*",
+        "https://outlook.live.com/*",
+        "https://outlook.office.com/*",
+        "https://mail.163.com/*",
+        "http://mail.163.com/*"
+      ],
+      "js": ["content/content.js"],
+      "css": ["content/content.css"],
+      "run_at": "document_end",
+      "all_frames": true,
+      "match_about_blank": true
+    }
+  ],
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "http://localhost:3000/*",
+    "https://mail.google.com/*",
+    "https://mail.163.com/*",
+    "http://mail.163.com/*",
+    "https://outlook.live.com/*",
+    "https://outlook.office.com/*"
+  ],
+  "options_page": "options/options.html",
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
+}

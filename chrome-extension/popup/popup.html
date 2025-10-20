@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>邮件智能助手</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <!-- 头部 -->
+    <header class="header">
+      <h1>邮件智能助手</h1>
+      <button id="settingsBtn" class="icon-btn" title="设置">⚙</button>
+    </header>
+
+    <!-- 状态指示器 -->
+    <div id="statusBar" class="status-bar">
+      <span id="statusText">就绪</span>
+      <span id="statusIcon"></span>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="main-content">
+      <!-- 邮件输入区 -->
+      <section class="section">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <h2 style="margin: 0;">邮件内容</h2>
+          <button id="refreshBtn" class="btn btn-small" type="button" title="重新提取当前邮件">刷新</button>
+        </div>
+        <div class="form-group">
+          <label for="emailSubject">主题：</label>
+          <input type="text" id="emailSubject" placeholder="邮件主题">
+        </div>
+        <div class="form-group">
+          <label for="emailBody">正文：</label>
+          <textarea id="emailBody" rows="10" placeholder="邮件正文内容..."></textarea>
+        </div>
+        <button id="analyzeBtn" class="btn btn-primary">分析邮件</button>
+      </section>
+
+      <!-- 分析结果区 -->
+      <section id="resultsSection" class="section hidden">
+        <h2>分析结果</h2>
+        
+        <!-- 摘要 -->
+        <div class="result-card">
+          <h3>邮件摘要</h3>
+          <p id="summaryText" class="result-text"></p>
+        </div>
+
+        <!-- 待办事项 -->
+        <div class="result-card">
+          <h3>待办事项</h3>
+          <ul id="actionItemsList" class="action-list"></ul>
+        </div>
+
+        <!-- 回复建议 -->
+        <div class="result-card">
+          <h3>回复建议</h3>
+          <div id="replySuggestions" class="reply-suggestions"></div>
+        </div>
+      </section>
+
+      <!-- 生成回复区 -->
+      <section id="draftSection" class="section hidden">
+        <h2>生成回复</h2>
+        <div class="form-group">
+          <label for="replyIntent">回复意图：</label>
+          <input type="text" id="replyIntent" placeholder="例如：接受会议邀请并建议时间">
+        </div>
+        <div class="form-group">
+          <label for="replyTone">语气：</label>
+          <select id="replyTone">
+            <option value="concise">简洁</option>
+            <option value="formal">正式</option>
+            <option value="friendly">友好</option>
+            <option value="professional">专业</option>
+            <option value="casual">随意</option>
+          </select>
+        </div>
+        <button id="generateDraftBtn" class="btn btn-secondary">生成草稿</button>
+        
+        <div id="draftResult" class="result-card hidden">
+          <h3>回复草稿</h3>
+          <textarea id="draftText" rows="8" readonly></textarea>
+          <button id="copyDraftBtn" class="btn btn-small">复制</button>
+        </div>
+      </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+      <small>Mail Assistant v0.2.0</small>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
