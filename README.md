@@ -285,7 +285,13 @@ npm run test:coverage
 
 ## 🚢 部署
 
-### Vercel部署（推荐，完整流程）
+### Vercel部署（两种方式）
+
+> 💡 **推荐使用方式2（Dashboard）**，更稳定且可以看到详细构建日志
+
+---
+
+### 方式1: 命令行部署（CLI）
 
 #### 1. 初始部署
 
@@ -404,6 +410,126 @@ Compress-Archive -Path * -DestinationPath ../mail-assistant-v1.0.1.zip -Force
 
 ---
 
+### 方式2: 网页部署（Dashboard）✨ 推荐
+
+**优点**：
+- ✅ 更稳定，不会卡住
+- ✅ 可视化界面，易于操作
+- ✅ 可以看到详细构建日志
+- ✅ 自动部署（连接GitHub后）
+
+#### 步骤1: 准备代码
+
+```bash
+# 1. 确保有vercel.json配置文件（项目根目录）
+# 如果没有，创建一个：
+```
+
+**创建 `vercel.json`**：
+```json
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "src/server.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "src/server.js"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
+}
+```
+
+```bash
+# 2. 提交到GitHub
+git add .
+git commit -m "chore: 添加Vercel配置"
+git push origin main
+```
+
+#### 步骤2: 在Vercel Dashboard部署
+
+1. **访问Vercel控制台**
+   ```
+   https://vercel.com/dashboard
+   ```
+
+2. **创建新项目**
+   - 点击 "Add New..." → "Project"
+   - 或点击 "New Project" 按钮
+
+3. **导入GitHub仓库**
+   - 点击 "Import Git Repository"
+   - 如果是第一次，需要连接GitHub账号
+   - 找到 `winkovo0818/gmail-triage-extension` 仓库
+   - 点击 "Import"
+
+4. **配置项目**
+   ```
+   Project Name: gmail-triage-extension
+   Framework Preset: Other
+   Root Directory: ./
+   Build Command: (留空)
+   Output Directory: (留空)  
+   Install Command: npm install
+   ```
+
+5. **添加环境变量**
+   
+   点击 "Environment Variables"，添加以下变量：
+   
+   | 变量名 | 值 | 说明 |
+   |--------|-----|------|
+   | `NODE_ENV` | `production` | 运行环境 |
+   | `LLM_API_KEY` | `sk-xxxxx` | 你的LLM API密钥 |
+   | `LLM_API_BASE` | `https://api.deepseek.com/v1` | API地址 |
+   | `LLM_MODEL` | `deepseek-chat` | 模型名称 |
+   | `CORS_ORIGIN` | `chrome-extension://*` | CORS设置 |
+   | `BACKEND_API_KEY` | `your-secret-key` | 后端密钥（可选） |
+
+   每个变量都选择 **Production** 环境。
+
+6. **开始部署**
+   - 点击 "Deploy" 按钮
+   - 等待构建完成（通常1-3分钟）
+   - 部署成功后会显示 ✅ 和访问链接
+
+7. **获取部署URL**
+   ```
+   示例：https://gmail-triage-extension.vercel.app
+   ```
+
+#### 步骤3: 配置Chrome扩展
+
+部署成功后，按照前面的"4. 配置Chrome扩展"步骤配置即可。
+
+#### 步骤4: 启用自动部署（推荐）
+
+部署成功后，Vercel会自动监听GitHub仓库：
+- ✅ 每次push到main分支 → 自动部署
+- ✅ 创建Pull Request → 自动生成预览环境
+- ✅ 可以在Dashboard查看所有部署历史
+
+**验证自动部署**：
+```bash
+# 修改代码
+git add .
+git commit -m "test: 测试自动部署"
+git push origin main
+
+# 几秒后，Vercel会自动开始部署
+# 可以在Dashboard看到新的部署记录
+```
+
+---
+
 ### 📊 Vercel管理
 
 #### 查看部署状态
@@ -476,6 +602,29 @@ curl -X POST https://your-project.vercel.app/analyze \
 ---
 
 ### ⚠️ 常见问题
+
+#### Q: CLI部署一直卡在 "Queued" 状态？
+**A**: 这是Vercel服务器负载高或网络问题导致的。
+
+**解决方法**：
+1. **按 Ctrl+C 取消**，然后重试：
+   ```bash
+   vercel --prod
+   ```
+
+2. **改用Dashboard部署（推荐）**：
+   - 参考上面的"方式2: 网页部署"
+   - 更稳定且可以看到详细日志
+
+3. **清理缓存重试**：
+   ```bash
+   vercel remove gmail-triage-extension --yes
+   vercel --prod
+   ```
+
+4. **检查Vercel服务状态**：
+   - 访问 https://www.vercel-status.com/
+   - 如果服务异常，等待恢复后再部署
 
 #### Q: 部署后扩展无法连接？
 **A**: 检查以下几点：
