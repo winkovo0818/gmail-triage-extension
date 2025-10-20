@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "邮件智能助手",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "智能分析邮件内容，生成摘要、待办事项和回复建议",
   "author": "云淡风轻",
   "homepage_url": "https://github.com/winkovo0818/gmail-triage-extension",

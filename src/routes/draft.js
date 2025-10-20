@@ -12,6 +12,7 @@ const { log } = require('../utils/enhancedLogger');
 const { llmLimiter } = require('../middleware/rateLimiter');
 const { validate, draftReplySchema } = require('../middleware/validator');
 const { AppError } = require('../middleware/errorHandler');
+const { contentFilter } = require('../middleware/contentFilter');
 const config = require('../config');
 
 const router = express.Router();
@@ -43,7 +44,7 @@ const router = express.Router();
  *       500:
  *         $ref: '#/components/responses/InternalServerError'
  */
-router.post('/', llmLimiter, validate(draftReplySchema), async (req, res, next) => {
+router.post('/', llmLimiter, validate(draftReplySchema), contentFilter, async (req, res, next) => {
   const startTime = Date.now();
   
   try {

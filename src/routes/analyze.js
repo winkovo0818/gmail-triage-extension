@@ -15,6 +15,7 @@ const { log } = require('../utils/enhancedLogger');
 const { llmLimiter } = require('../middleware/rateLimiter');
 const { validate, analyzeSchema } = require('../middleware/validator');
 const { AppError } = require('../middleware/errorHandler');
+const { contentFilter } = require('../middleware/contentFilter');
 
 const cache = new NodeCache({ 
   stdTTL: config.CACHE_TTL, 
@@ -50,7 +51,7 @@ const router = express.Router();
  *       500:
  *         $ref: '#/components/responses/InternalServerError'
  */
-router.post('/', llmLimiter, validate(analyzeSchema), async (req, res, next) => {
+router.post('/', llmLimiter, validate(analyzeSchema), contentFilter, async (req, res, next) => {
   const startTime = Date.now();
   
   try {

@@ -13,8 +13,10 @@
 - 💡 **回复建议** - 提供多种回复选项和模板
 - ✍️ **智能草稿生成** - 根据意图自动生成回复草稿
 - 📥 **自动内容提取** - 支持163邮箱自动提取邮件内容
+- 🔒 **内容保护** - 邮件正文只读，确保分析真实内容
 - 🎨 **多语气支持** - 简洁、正式、友好、专业、随意五种语气
 - ⚡ **快速响应** - 内存缓存优化，响应时间<500ms
+- 🛡️ **安全防护** - XSS防护、速率限制、IP黑名单
 
 ## 🏗️ 架构
 
@@ -111,6 +113,8 @@ npm run build
 1. **打开163邮箱** → https://mail.163.com
 2. **点击邮件** 进入阅读界面
 3. **点击扩展图标** 自动提取邮件内容
+   - ⚠️ 邮件正文为只读，无法手动编辑（确保分析真实内容）
+   - ✅ 主题可以编辑
 4. **点击"分析邮件"** 查看AI分析结果：
    - 📝 邮件摘要
    - ✅ 待办事项清单
@@ -126,8 +130,10 @@ npm run build
 
 ### 刷新功能
 
-如果自动提取失败或需要更新：
+如果自动提取失败或邮件内容显示不正确：
 - 点击**"刷新"按钮**重新提取邮件内容
+- 邮件正文会自动更新为最新内容
+- ⚠️ 注意：正文为只读，只能通过刷新获取新内容
 
 ## 🔧 配置说明
 
@@ -137,8 +143,9 @@ npm run build
 # 必需配置
 NODE_ENV=production                    # 运行环境：development/production
 PORT=3000                              # 服务端口
-LLM_PROVIDER=deepseek                  # LLM提供商：openai/deepseek
-DEEPSEEK_API_KEY=sk-xxxxx              # DeepSeek API密钥
+LLM_API_BASE=https://api.deepseek.com/v1  # LLM API地址
+LLM_API_KEY=sk-xxxxx                   # LLM API密钥（DeepSeek或OpenAI）
+LLM_MODEL=deepseek-chat                # LLM模型名称
 
 # 可选配置
 BACKEND_API_KEY=your-secret-key        # 后端API密钥（建议生产环境启用）
@@ -278,27 +285,242 @@ npm run test:coverage
 
 ## 🚢 部署
 
-### Vercel部署（推荐）
+### Vercel部署（推荐，完整流程）
+
+#### 1. 初始部署
 
 ```bash
-# 安装Vercel CLI
+# 在项目根目录执行
+cd d:\hds\project\email
+
+# 安装Vercel CLI（如果还没安装）
 npm i -g vercel
 
-# 登录
+# 登录Vercel账号
 vercel login
+# 会打开浏览器进行授权
 
-# 部署
+# 首次部署（测试环境）
 vercel
+# 按提示操作：
+# - Set up and deploy? Y
+# - Which scope? 选择你的账号
+# - Link to existing project? N
+# - What's your project's name? gmail-triage-extension
+# - In which directory is your code located? ./
+# - Want to override the settings? N
 
-# 设置环境变量
-vercel env add DEEPSEEK_API_KEY
-vercel env add BACKEND_API_KEY
-
-# 生产部署
-vercel --prod
+# 等待部署完成，会得到一个URL
+# 例如：https://gmail-triage-extension-xxxx.vercel.app
 ```
 
-详细部署指南请查看 [DEPLOYMENT.md](./DEPLOYMENT.md)
+#### 2. 配置环境变量
+
+```bash
+# 添加LLM API密钥（DeepSeek或OpenAI）
+vercel env add LLM_API_KEY
+# 选择环境：Production, Preview, Development (选择 Production)
+# 输入你的密钥：sk-xxxxx
+
+# 添加LLM API地址（如果使用DeepSeek）
+vercel env add LLM_API_BASE
+# 输入：https://api.deepseek.com/v1
+
+# 添加LLM模型（可选）
+vercel env add LLM_MODEL
+# 输入：deepseek-chat
+
+# 添加后端API密钥（可选）
+vercel env add BACKEND_API_KEY
+# 输入一个强密码：your-secure-password
+
+# 添加其他环境变量
+vercel env add NODE_ENV
+# 输入：production
+
+vercel env add CORS_ORIGIN
+# 输入：chrome-extension://*
+```
+
+#### 3. 生产环境部署
+
+```bash
+# 部署到生产环境
+vercel --prod
+
+# 部署完成后会得到生产URL
+# 例如：https://gmail-triage-extension.vercel.app
+```
+
+#### 4. 配置Chrome扩展
+
+部署成功后，**推荐使用Options页面配置**（无需修改代码）：
+
+```
+1. 右键点击扩展图标 → 选择"选项"
+2. 在"API服务器地址"中填写你的Vercel URL：
+   https://gmail-triage-extension.vercel.app
+3. 如果设置了BACKEND_API_KEY，也填写到"API密钥"框
+4. 点击"测试连接"确保配置正确
+5. 点击"保存设置"
+6. 完成！✅
+```
+
+**优点**：
+- ✅ 无需修改代码和重新打包
+- ✅ 可以随时切换不同的后端地址
+- ✅ 支持本地开发和生产环境切换
+
+> 💡 **更多配置方式**：查看 [DEPLOYMENT_CONFIG.md](./DEPLOYMENT_CONFIG.md)
+> - 方式1：Options页面配置（推荐）
+> - 方式2：修改默认配置
+> - 方式3：创建配置文件
+
+---
+
+#### 4备选. 修改默认配置（可选）
+
+如果你想让扩展默认使用Vercel地址，可以修改代码：
+
+**编辑 `chrome-extension/popup/popup.js`**：
+```javascript
+// 第11行，修改默认URL
+let API_BASE_URL = 'https://gmail-triage-extension.vercel.app';
+```
+
+然后重新打包和安装：
+
+```powershell
+# Windows PowerShell
+cd chrome-extension
+Compress-Archive -Path * -DestinationPath ../mail-assistant-v1.0.1.zip -Force
+```
+
+重新加载扩展：
+```
+1. chrome://extensions/ → 刷新扩展
+2. 或删除后重新安装
+```
+
+---
+
+### 📊 Vercel管理
+
+#### 查看部署状态
+```bash
+# 查看所有部署
+vercel ls
+
+# 查看项目信息
+vercel inspect
+
+# 查看日志
+vercel logs
+# 或在 Vercel Dashboard: https://vercel.com/dashboard
+```
+
+#### 更新代码后重新部署
+```bash
+# 1. 提交代码
+git add .
+git commit -m "Update features"
+git push origin main
+
+# 2. 重新部署
+vercel --prod
+
+# 3. 自动部署（推荐）
+# 在 Vercel Dashboard 连接 GitHub 仓库
+# 每次 push 到 main 分支自动部署
+```
+
+#### 查看和修改环境变量
+```bash
+# 查看所有环境变量
+vercel env ls
+
+# 删除环境变量
+vercel env rm VARIABLE_NAME
+
+# 拉取环境变量到本地（用于本地开发）
+vercel env pull
+```
+
+---
+
+### 🔍 验证部署
+
+部署完成后，测试以下端点：
+
+```bash
+# 1. 健康检查
+curl https://your-project.vercel.app/health
+
+# 应返回：
+# {"ok":true,"ts":1697798400000,"version":"0.2.0","uptime":3600.5}
+
+# 2. API文档
+# 访问：https://your-project.vercel.app/api-docs
+
+# 3. 测试分析接口（需要API密钥）
+curl -X POST https://your-project.vercel.app/analyze \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: your-backend-api-key" \
+  -d '{
+    "subject": "测试",
+    "body": "这是一封测试邮件",
+    "language": "zh"
+  }'
+```
+
+---
+
+### ⚠️ 常见问题
+
+#### Q: 部署后扩展无法连接？
+**A**: 检查以下几点：
+1. ✅ Vercel URL是否正确（https://开头）
+2. ✅ `popup.js` 中的 `API_BASE_URL` 是否已更新
+3. ✅ 扩展是否重新加载
+4. ✅ CORS环境变量是否设置为 `chrome-extension://*`
+
+#### Q: API返回401错误？
+**A**: 
+1. 检查是否设置了 `BACKEND_API_KEY` 环境变量
+2. 如果设置了，在扩展的Options页面填写相同的密钥
+
+#### Q: 部署后如何查看错误日志？
+**A**: 
+```bash
+# 命令行查看
+vercel logs
+
+# 或访问 Vercel Dashboard
+# https://vercel.com/你的用户名/gmail-triage-extension
+# 点击 "Logs" 标签
+```
+
+#### Q: 免费版Vercel有什么限制？
+**A**: 
+- ✅ 每月100GB带宽
+- ✅ 每月100GB-hours执行时间
+- ✅ 无限部署次数
+- ⚠️ 函数执行时间限制10秒
+- ⚠️ 无服务器函数大小限制50MB
+
+---
+
+### 🎯 最佳实践
+
+1. **使用环境变量** - 不要在代码中硬编码密钥
+2. **启用自动部署** - 连接GitHub自动部署
+3. **监控日志** - 定期查看Vercel Dashboard
+4. **设置告警** - 在Vercel中配置部署失败通知
+5. **使用自定义域名** - 更专业的访问地址
+
+---
+
+详细部署指南和其他平台部署方式请查看：[DEPLOYMENT.md](./DEPLOYMENT.md)
 
 ## 📊 性能
 
@@ -318,12 +540,32 @@ vercel --prod
 
 ## 🛡️ 安全
 
-- ✅ HTTPS通信
-- ✅ API密钥加密存储
-- ✅ 请求速率限制
-- ✅ 输入验证和过滤
-- ✅ SQL注入防护
-- ✅ XSS防护（Helmet）
+### 多层安全防护
+
+```
+请求 → IP黑名单 → 速率限制 → XSS检测 → 长度验证 → API密钥 → 业务处理
+```
+
+### 安全特性
+
+- ✅ **内容保护** - 邮件正文只读，防止篡改真实内容
+- ✅ **XSS防护** - 注入攻击检测和拦截（脚本、事件处理器等）
+- ✅ **速率限制** - 防止API盗刷（10次/分钟/IP）
+- ✅ **IP黑名单** - 自动滥用检测（50次/小时）和自动拉黑
+- ✅ **API密钥** - 访问权限控制（可选启用）
+- ✅ **输入验证** - 严格的Joi Schema验证
+- ✅ **请求限制** - 最大512KB请求体，防止攻击
+- ✅ **HTTPS通信** - 加密传输保护
+- ✅ **Helmet** - 安全响应头（CSP、XSS等）
+
+### 设计原则
+
+1. **内容真实性** - 正文只读，确保分析的是邮箱中的真实内容
+2. **分层防护** - 多层安全检查，逐级过滤恶意请求
+3. **自动响应** - 滥用检测和自动拉黑，无需人工干预
+4. **最小权限** - API密钥可选，支持灵活的访问控制
+
+> 📖 详细安全说明请查看：[SECURITY.md](./SECURITY.md) 和 [SECURITY_UPDATE.md](./SECURITY_UPDATE.md)
 
 ## 🤝 贡献
 
@@ -337,13 +579,19 @@ vercel --prod
 
 ## 📝 版本历史
 
-### v1.0.0 (2025-10-20)
-- ✨ 首次发布
-- ✅ 163邮箱自动提取
-- ✅ AI邮件分析
-- ✅ AI回复草稿生成
-- ✅ 完整后端API
-- ✅ Chrome扩展
+### v1.0.1 (2025-10-20) - 安全增强
+- 🔒 **新增** 邮件正文只读保护
+- ❌ **移除** 违禁词检测（避免误杀）
+- ✅ **保留** XSS防护、速率限制、IP黑名单
+- 🎨 **优化** 用户界面提示
+
+### v1.0.0 (2025-10-20) - 首次发布
+- ✨ 163邮箱自动提取
+- 🤖 AI邮件分析和摘要
+- ✍️ AI回复草稿生成
+- 🛡️ 完整安全防护体系
+- 🎨 Chrome扩展完整功能
+- ⚡ 轻量化部署（无数据库）
 
 查看完整更新日志：[CHANGELOG.md](./CHANGELOG.md)
 

@@ -33,8 +33,8 @@
           <input type="text" id="emailSubject" placeholder="邮件主题">
         </div>
         <div class="form-group">
-          <label for="emailBody">正文：</label>
-          <textarea id="emailBody" rows="10" placeholder="邮件正文内容..."></textarea>
+          <label for="emailBody">正文：<span style="color: #666; font-size: 12px; font-weight: normal;">（自动提取，不可编辑）</span></label>
+          <textarea id="emailBody" rows="10" placeholder="邮件正文内容..." readonly></textarea>
         </div>
         <button id="analyzeBtn" class="btn btn-primary">分析邮件</button>
       </section>
@@ -91,7 +91,7 @@
 
     <!-- 页脚 -->
     <footer class="footer">
-      <small>Mail Assistant v0.2.0</small>
+      <small>Mail Assistant v1.0.1</small>
     </footer>
   </div>
 

@@ -18,6 +18,7 @@ const { swaggerUi, swaggerSpec } = require('./config/swagger');
 
 // 导入中间件
 const { generalLimiter } = require('./middleware/rateLimiter');
+const { ipFilter } = require('./middleware/ipFilter');
 const { 
   notFoundHandler, 
   errorHandler,
@@ -68,6 +69,9 @@ if (config.NODE_ENV !== 'production') {
     }
   }));
 }
+
+// IP黑名单过滤（优先级最高）
+app.use(ipFilter);
 
 // 通用速率限制
 app.use(generalLimiter);
