@@ -1,0 +1,17 @@
+{
+  "name": "gmail-triage-extension",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Chrome/Edge MV3 extension scaffold with TypeScript, Vite, and configurable Profiles for LLM triage.",
+  "scripts": {
+    "dev": "vite build --watch",
+    "build": "vite build",
+    "clean": "rimraf dist"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.276",
+    "rimraf": "^5.0.5",
+    "typescript": "^5.3.3",
+    "vite": "^5.4.0"
+  }
+}

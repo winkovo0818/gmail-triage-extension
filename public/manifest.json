@@ -1,0 +1,32 @@
+{
+  "manifest_version": 3,
+  "name": "Gmail Triage Helper",
+  "version": "0.1.0",
+  "description": "MV3 extension scaffold with Profiles management and LLM client wrapper.",
+  "permissions": [
+    "storage",
+    "scripting",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "https://mail.google.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://mail.google.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "action": {
+    "default_title": "Gmail Triage Helper"
+  }
+}
